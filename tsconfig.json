@@ -1,0 +1,26 @@
+{
+  /* ==========================================================
+   * tsconfig.json —— TypeScript 的"检查规则"配置
+   * TS = JavaScript + 类型检查（写代码时帮你查错，详见 src/types.ts）
+   * ========================================================== */
+  "compilerOptions": {
+    "target": "ES2022", // 编译成哪个版本的 JS
+    "lib": ["ES2022", "DOM", "DOM.Iterable"], // 可用的内置 API（DOM = 浏览器接口）
+    "module": "ESNext", // 模块系统用最新的
+    "moduleResolution": "bundler", // 用打包器（Vite）的方式找文件
+
+    "jsx": "react-jsx", // JSX 交给 React 19 的新编译方式（不用每次 import React）
+    "strict": true, // 开启最严格的类型检查（强烈推荐，能拦住最多错误）
+    "noUnusedLocals": true, // 定义了没用的变量 -> 报错
+    "noUnusedParameters": true, // 定义了没用的参数 -> 报错
+    "noFallthroughCasesInSwitch": true, // switch 忘写 break -> 报错
+
+    "noEmit": true, // TS 只负责检查，不生成 JS 文件（生成交给 Vite）
+    "skipLibCheck": true, // 跳过第三方库内部类型的检查（加快速度）
+    "isolatedModules": true, // 每个文件独立编译（Vite 要求）
+
+    "types": ["vite/client"] // 引入 Vite 的浏览器端类型
+  },
+  // 只检查这两个范围的文件
+  "include": ["src", "vite.config.ts"]
+}

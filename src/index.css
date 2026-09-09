@@ -1,111 +1,101 @@
+/* ============================================================
+ * index.css —— 全局基础样式（设计变量 + 重置）
+ *
+ * 【知识点】CSS 变量（自定义属性）：
+ * 把颜色、圆角、阴影这些"设计token"定义在 :root（<html> 根元素）上，
+ * 全项目通过 var(--xxx) 引用。换主题色只需要改一处。
+ * 以后学了 CSS-in-JS / Tailwind，会发现"设计token"的思想是一样的。
+ *
+ * 文件分工：
+ *   index.css —— 全局基础（字体、变量、reset）
+ *   App.css   —— 本项目布局和组件样式（由 App.jsx 引入）
+ * ============================================================ */
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /* ---- 颜色：亮色模式（默认） ---- */
+  --bg: #f3f4f8; /* 页面背景 */
+  --surface: #ffffff; /* 卡片/面板背景 */
+  --border: #e4e5ea; /* 分割线 */
+  --text: #3f4150; /* 正文 */
+  --text-secondary: #7c7f92; /* 次要文字 */
+  --text-heading: #1d1e29; /* 标题 */
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --primary: #5b5bd6; /* 主色（品牌紫蓝） */
+  --primary-hover: #4a4ac2;
+  --primary-soft: rgba(91, 91, 214, 0.1); /* 主色的浅底 */
+
+  --success: #178a50;
+  --success-soft: rgba(23, 138, 80, 0.12);
+  --warning: #b45309;
+  --warning-soft: rgba(217, 119, 6, 0.14);
+  --danger: #c2373b;
+  --danger-soft: rgba(194, 55, 59, 0.12);
+
+  /* ---- 形状与阴影 ---- */
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 2px rgba(16, 18, 35, 0.06), 0 4px 14px rgba(16, 18, 35, 0.06);
+
+  /* ---- 字体 ---- */
+  --sans: system-ui, "Segoe UI", "Microsoft YaHei", Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
+}
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* 【知识点】媒体查询 prefers-color-scheme：跟随系统的暗色模式。
+ * 只需要重新定义一遍变量，所有 var() 引用处自动换肤 —— 这就是
+ * "用变量做主题"的好处。 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14151c;
+    --surface: #1e2029;
+    --border: #31333f;
+    --text: #c6c8d4;
+    --text-secondary: #8f92a3;
+    --text-heading: #f0f1f6;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
+    --primary: #8687f5;
+    --primary-hover: #9d9ef8;
+    --primary-soft: rgba(134, 135, 245, 0.16);
+
+    --success: #4ade80;
+    --success-soft: rgba(74, 222, 128, 0.14);
+    --warning: #fbbf24;
+    --warning-soft: rgba(251, 191, 36, 0.14);
+    --danger: #f87171;
+    --danger-soft: rgba(248, 113, 113, 0.14);
+
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.3);
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+/* ---- 全局重置：浏览器默认样式往往不符合设计，先清掉 ---- */
+* {
+  box-sizing: border-box; /* 让 width 包含 padding+border，布局更好算 */
 }
 
 body {
-  margin: 0;
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+  margin: 0; /* 清掉浏览器默认的 8px 边距 */
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
 }
 
 h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+h2,
+h3 {
+  color: var(--text-heading);
+  margin: 0;
+  line-height: 1.3;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
 p {
   margin: 0;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+a {
+  color: inherit;
+  text-decoration: none;
 }

@@ -1,184 +1,583 @@
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
+/* ============================================================
+ * App.css —— 本项目的布局 + 组件样式（由 App.jsx 引入）
+ *
+ * 【知识点】本项目页面骨架的 CSS 对应关系（对照 MainLayout.jsx 看）：
+ *
+ *   .app-shell          整个应用的外壳，纵向 flex
+ *   ├── .app-header     顶栏（全宽）
+ *   └── .app-body       剩余空间，横向 flex
+ *       ├── .sidebar    左侧导航（固定宽度）
+ *       └── .app-main   内容区（flex:1 吃掉剩余宽度）
+ *
+ * Flex 布局速记：
+ *   display:flex       子元素横向排（配 flex-direction: column 变纵向）
+ *   flex: 1            分到剩余空间的全部
+ *   align-items        交叉轴对齐（横排时 = 垂直居中 center）
+ *   justify-content    主轴对齐（横排时 = 水平分布）
+ *   gap                子元素之间的间距（比 margin 好维护）
+ * ============================================================ */
 
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-}
-
-.hero {
-  position: relative;
-
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
-
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
-
-  .framework,
-  .vite {
-    position: absolute;
-  }
-
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
-  }
-}
-
-#center {
+/* ---------- 应用外壳（MainLayout） ---------- */
+.app-shell {
+  min-height: 100vh; /* 至少占满一屏 */
   display: flex;
   flex-direction: column;
-  gap: 25px;
-  place-content: center;
-  place-items: center;
-  flex-grow: 1;
-
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
-  }
 }
 
-#next-steps {
+/* ---------- 顶栏（Header） ---------- */
+.app-header {
+  height: 60px;
   display: flex;
-  border-top: 1px solid var(--border);
-  text-align: left;
-
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
-  }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    text-align: center;
-  }
+  align-items: center;
+  justify-content: space-between; /* 两端分布：左 brand 右 user */
+  padding: 0 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
 }
 
-#docs {
+.app-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-header__brand h2 {
+  font-size: 17px;
+}
+
+.app-header__logo {
+  font-size: 22px;
+}
+
+.app-header__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-header__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+}
+
+.app-header__name {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* ---------- 中部区域：侧栏 + 内容 ---------- */
+.app-body {
+  flex: 1; /* 占满顶栏以下的全部高度 */
+  display: flex;
+}
+
+/* ---------- 侧边栏（Sidebar） ---------- */
+.sidebar {
+  width: 208px;
+  flex-shrink: 0; /* 不允许被压缩 */
+  padding: 20px 14px;
+  background: var(--surface);
   border-right: 1px solid var(--border);
-
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
+  display: flex;
+  flex-direction: column;
 }
 
-#next-steps ul {
-  list-style: none;
-  padding: 0;
+.sidebar__title {
+  font-size: 12px;
+  color: var(--text-secondary);
+  letter-spacing: 2px;
+  padding: 0 10px;
+  margin-bottom: 10px;
+}
+
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 导航链接（默认态） */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 14px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav-link:hover {
+  background: var(--bg);
+}
+
+/* NavLink 自动挂上的高亮态（见 Sidebar.jsx 里 className 函数） */
+.nav-link--active {
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.sidebar__footer {
+  margin-top: auto; /* flex 纵排时推到最底部 */
+  padding: 0 10px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* ---------- 内容区 ---------- */
+.app-main {
+  flex: 1;
+  min-width: 0; /* 防止内容把 flex 撑爆的经典小技巧 */
+}
+
+/* ---------- 页面容器（所有 page 组件共用） ---------- */
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 28px 24px 48px;
+}
+
+.page__title {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.page__desc {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-bottom: 22px;
+}
+
+/* ---------- 通用卡片 ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+/* ---------- Dashboard 统计卡网格 ---------- */
+/* 【知识点】Grid 布局：grid-template-columns 定义 4 列，
+ * repeat(4, 1fr) 表示"重复 4 个等分"。auto-fit + minmax 能在小屏自动换行，
+ * 是响应式网格的常用一行代码。 */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px 18px;
+}
+
+.stat-card__label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.stat-card__value {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--text-heading);
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums; /* 数字等宽，跳动时不晃 */
+}
+
+.stat-card__foot {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* 修饰符：低库存卡（黄）与缺货卡（红）。BEM 的 -- 修饰符命名风格 */
+.stat-card--warning .stat-card__value {
+  color: var(--warning);
+}
+
+.stat-card--danger .stat-card__value {
+  color: var(--danger);
+}
+
+/* ---------- Dashboard 欢迎卡 ---------- */
+.welcome-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 24px;
+}
+
+.welcome-card h2 {
+  font-size: 17px;
+  margin-bottom: 8px;
+}
+
+.welcome-card p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.welcome-card__actions {
+  margin-top: 14px;
+}
+
+/* ---------- 库存管理页：工具栏 ---------- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap; /* 窄屏时自动换行 */
+  margin-bottom: 16px;
+}
+
+.toolbar__search {
   display: flex;
   gap: 8px;
-  margin: 32px 0 0;
+  flex: 1;
+  max-width: 420px;
+}
 
-  .logo {
-    height: 18px;
+.toolbar__search .field__input {
+  flex: 1;
+}
+
+.toolbar__total {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.toolbar__total strong {
+  color: var(--text-heading);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 库存列表行（InventoryItem） ---------- */
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 13px 18px;
+  transition: border-color 0.2s;
+}
+
+.item-row:hover {
+  border-color: var(--primary);
+}
+
+.item-row__code {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--primary);
+  min-width: 64px;
+}
+
+.item-row__name {
+  flex: 1;
+  color: var(--text-heading);
+  font-weight: 500;
+}
+
+.item-row__name:hover {
+  color: var(--primary);
+}
+
+.item-row__qty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.item-row__num {
+  min-width: 44px;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-heading);
+  font-variant-numeric: tabular-nums;
+  animation: pop 0.25s; /* 数字变化时的弹跳动画（key 变化触发重挂载） */
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.7);
+    color: var(--primary);
   }
-
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
+  100% {
+    transform: scale(1);
   }
 }
 
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
-  }
+/* ---------- 库存状态徽章 ---------- */
+.stock-tag {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
-.ticks {
-  position: relative;
+.stock-tag--ok {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.stock-tag--warning {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.stock-tag--danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+/* ---------- 详情页 ---------- */
+.detail-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 18px;
+  overflow: hidden; /* 让第一行/最后一行的背景圆角被裁剪 */
+}
+
+.detail-card__row {
+  display: flex;
+  padding: 13px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-card__row:last-child {
+  border-bottom: none;
+}
+
+.detail-card__label {
+  width: 110px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.detail-card__value {
+  flex: 1;
+  color: var(--text-heading);
+  font-weight: 500;
+}
+
+/* ---------- 登录页 ---------- */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.login-card {
+  width: 360px;
+  max-width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 32px 30px;
+}
+
+.login-card__head {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.login-card__logo {
+  font-size: 40px;
+}
+
+.login-card__head h1 {
+  font-size: 20px;
+  margin: 8px 0 4px;
+}
+
+.login-card__head p {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.login-card__error {
+  color: var(--danger);
+  font-size: 13px;
+  margin: 10px 0 2px;
+}
+
+.login-card__submit {
   width: 100%;
+  margin-top: 18px;
+}
 
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
+.login-card__tip {
+  margin-top: 14px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* ---------- 表单字段 ---------- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.field__input {
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text-heading);
+  font-size: 14px;
+  font-family: var(--sans);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* :focus 聚焦态 —— 输入时高亮边框 */
+.field__input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+/* ---------- 404 页 ---------- */
+.notfound {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.notfound__code {
+  font-size: 72px;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.notfound__hint {
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+
+/* ---------- 加载/错误/空状态提示 ---------- */
+.state-hint {
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.state-hint--error {
+  color: var(--danger);
+}
+
+/* ---------- 按钮 ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: var(--sans);
+  cursor: pointer; /* 鼠标悬停变手型 */
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+/* :disabled 禁用态（对应数量为 0 时的减号按钮） */
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 修饰符：主按钮（实心） */
+.btn--primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+/* 修饰符：幽灵按钮（描边） */
+.btn--ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.btn--ghost:hover:not(:disabled) {
+  color: var(--text-heading);
+  border-color: var(--text-secondary);
+}
+
+/* 修饰符：步进小按钮（+ / -） */
+.btn--step {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font-size: 17px;
+  line-height: 1;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn--step:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* ---------- 窄屏适配 ---------- */
+@media (max-width: 720px) {
+  .sidebar {
+    width: 148px;
   }
 
-  &::before {
-    left: 0;
-    border-left-color: var(--border);
+  .item-row {
+    flex-wrap: wrap;
   }
-  &::after {
-    right: 0;
-    border-right-color: var(--border);
+
+  .item-row__name {
+    flex-basis: 100%; /* 窄屏时名称独占一行 */
   }
 }
