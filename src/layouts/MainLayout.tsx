@@ -19,7 +19,7 @@ import Sidebar from "../components/Sidebar";
 function MainLayout() {
   return (
     <div className="app-shell">
-      <Header /> {/* 顶栏，全宽 */}
+      <Header />
 
       <div className="app-body">
         <Sidebar />

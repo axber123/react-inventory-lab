@@ -81,6 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
  * 真实项目普遍在这里开例外，所以主动禁用这一条。 */
 // eslint-disable-next-line react-refresh/only-export-components
 export function useAuth(): AuthContextValue {
+  // 获取上下文 userContext(自定义的Context对象)
   const context = useContext(AuthContext);
 
   // 防呆检查：如果某个组件忘了被 <AuthProvider> 包住，context 会是 null。

@@ -1,6 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
-import Demo from "./pages/Demo";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Inventory from "./pages/Inventory";
@@ -28,13 +27,11 @@ import "./App.css";
 
 function App() {
   return (
-    /* AuthProvider 放最外层：它包住的范围内（所有页面）都能 useAuth() */
+    /* AuthProvider 放最外层：它包住的范围内（所有页面）都能 useAuth() 去获取Context*/
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/demo" element={<Demo></Demo>} />
           <Route path="/login" element={<Login />} />
-          <Route path="/about" element={<h1>关于我们</h1>} />
 
           {/* 重定向：访问 / 时立刻跳到 /dashboard replace = 不留历史记录，后退键不会退回 / */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

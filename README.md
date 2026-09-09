@@ -261,3 +261,38 @@ Login 表单提交 ──► useAuth().login(名字) ──► AuthContext 的 s
 - 库存增减应 POST 到后端持久化（目前只改了前端内存）
 - 数据量大时用 TanStack Query 管理请求缓存
 - 把 `useInventory` 的增减逻辑改写成 `useReducer` 是很好的练习题
+
+---
+
+## 💼 简历技能参考（学完本项目可以写的 React 技能）
+
+> ⚠️ 先提醒一句：**写上去的每一条都可能被面试官追问原理或让你现场写**。
+> 每条后面用（→ 文件）标注了对应源码，写之前把那几个文件再过一遍；
+> 本项目没涉及的（Redux、SSR、单元测试等）不要硬写。
+
+### 版本一：详细版（适合"专业技能"栏目逐条罗列）
+
+- 熟悉 React 19 函数组件开发，理解组件化思想、JSX 语法与渲染/重渲染机制（→ main.tsx、App.tsx）
+- 熟悉常用 Hooks：useState 状态管理、useEffect 副作用与依赖数组、useRef 获取 DOM、useMemo 缓存计算，并能编写自定义 Hook 复用带状态的逻辑（→ useInventory.ts、useAuth）
+- 理解单向数据流：props 向下传数据、回调函数向上传事件；掌握受控组件、列表渲染中 key 的正确使用、不可变更新与函数式更新 setX(prev => next)（→ Inventory.tsx、InventoryItem.tsx、useInventory.ts）
+- 熟悉 React Router：布局路由与 Outlet、嵌套路由、动态路由参数 useParams、编程式导航 useNavigate、登录守卫（受保护路由）与 404 兜底、重定向（→ App.tsx、RequireAuth.tsx、InventoryDetail.tsx）
+- 掌握 Context 全局状态共享：createContext / Provider / useContext 三步用法，理解并解决 props 逐层传递（prop drilling）问题（→ AuthContext.tsx、Header.tsx）
+- 使用 TypeScript 进行开发：type 定义数据结构、联合类型（`X | null`）、泛型（`useState<T>`）、类型收窄与判空，减少运行时错误（→ types.ts、各组件）
+- 熟悉 Vite 工程化开发：dev/build/lint 流程、路径与开发代理配置，能编写 Vite 插件 mock 后端接口，独立搭建前后端分离开发环境（→ vite.config.ts）
+- 熟悉浏览器原生 fetch 与异步处理：async/await、Promise、response.ok 状态检查与统一错误处理封装（→ inventoryApi.ts）
+- 了解渲染性能常识：useMemo 缓存昂贵计算、缓存 Context 的 value 避免无关组件重渲染（→ Dashboard.tsx、AuthContext.tsx）
+- 掌握 ES6+ 常用语法：解构赋值、展开运算符、模板字符串、map/filter/reduce、可选链 `?.`（贯穿全部源码）
+
+### 版本二：简洁版（技能栏只有一两行时用）
+
+> React / React Router / TypeScript / Vite：熟悉函数组件与常用 Hooks（useState、useEffect、useMemo、useRef、useContext、自定义 Hook），掌握路由设计与登录守卫、Context 状态共享、单向数据流与不可变更新，能用 TypeScript + Vite 完成前端工程化开发。
+
+再精简的一句话版（版面紧张时挑重点写）：
+
+> React：函数组件、Hooks 与自定义 Hook、React Router 路由设计、Context 状态管理、单向数据流；TypeScript、Vite
+
+### 配套小建议
+
+- 面试时最常被追问的三个点：**useEffect 依赖数组为什么这么设计**、**key 为什么不能用数组下标**、**为什么改 state 要造新对象** —— 这三个的答案都在源码注释里，重点复习
+- 这个项目本身也可以写进"项目经历"：README 里的「数据流向结构」图就是现成的介绍素材，把库存增减按钮、搜索、登录守卫当成功能点讲即可
+- 想再攒一条可写的技术点：把 `useInventory` 改写成 `useReducer`，就能多写一条"使用 useReducer 管理复杂状态"
