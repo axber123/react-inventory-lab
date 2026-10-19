@@ -1,298 +1,191 @@
-# react-inventory · React 库存管理学习项目
+# React Inventory Portfolio SPA
 
-React 19 + Vite + React Router 7 + **TypeScript** 的教学项目，演示路由、Hooks、Context、单向数据流等核心知识点。
-每个源码文件顶部都有教学注释（专有名词第一次出现都会用大白话解释）。
+一个面向前端实习/初级岗位的 React + TypeScript 库存管理系统作品集项目。项目保留少量教学说明，但核心结构按真实前端项目组织：API 分层、TanStack Query 缓存、MSW Mock、React Hook Form + Zod 表单校验、路由守卫、Vitest + Testing Library 测试、可静态部署。
 
-## 启动
+## Preview
+
+> 本地启动后访问 `http://localhost:5173`。  
+> 演示账号：用户名任意非空，密码至少 6 位；输入 `admin` 会显示管理员角色。
+
+![登录页与库存看板](./docs/preview-placeholder.png)
+
+## Features
+
+- 登录鉴权：`/api/auth/login` mock API，登录态保存在 `sessionStorage`，刷新不掉线。
+- 受保护路由：未登录访问 `/dashboard`、`/inventory` 会跳转到 `/login`，登录后回到原页面。
+- 库存看板：物料种类、库存总量、低库存、缺货统计，由 TanStack Query 缓存数据派生。
+- 库存列表：关键词、分类、库存状态组合筛选，筛选条件同步到 URL query。
+- 库存调整：`+1/-1` 使用 TanStack Query mutation，带 optimistic update 和失败回滚。
+- 库存详情：动态路由 `/inventory/:id` 独立请求详情，支持直接刷新详情链接。
+- Mock 持久化：MSW 模拟接口，库存调整写入 `localStorage`，刷新后保留演示数据。
+- 工程化：`@/` 路径别名、ESLint、TypeScript strict、Vitest、Testing Library、MSW worker。
+
+## Tech Stack
+
+| 分类 | 技术 |
+| --- | --- |
+| 核心 | React 19、TypeScript、Vite |
+| 路由 | React Router 7 |
+| 数据请求 | TanStack Query、fetch |
+| Mock | MSW、localStorage |
+| 表单 | React Hook Form、Zod |
+| UI | 原生 CSS、lucide-react |
+| 测试 | Vitest、Testing Library、jsdom |
+| 代码质量 | ESLint、typescript-eslint |
+
+## Quick Start
 
 ```bash
 npm install
-npm run dev         # 开发服务器，浏览器打开 http://localhost:5173
-npm run typecheck   # 只做 TypeScript 类型检查
-npm run lint        # 只做代码规范检查
-npm run build       # 类型检查 + 打包（模拟上线）
+npm run dev
 ```
 
-登录随便填：任意非空用户名/密码即可（教学项目没有真后端）。
+默认启用 MSW Mock，不需要真实后端。
 
----
-
-## 🗺️ 如何阅读这个项目（推荐路线）
-
-**建议按"站点"顺序读，每站 10~20 分钟。每一站都配了一个小练习，改一行代码、刷新浏览器、亲眼看到变化 —— 这比看十遍都有用。**
-
-### 第 1 站：网页是怎么"开始"的（15 分钟）
-
-| 文件 | 看什么 |
-|---|---|
-| [index.html](index.html) | 整个网页只有一个空的 `<div id="root">`，其余全靠 JS |
-| [src/main.tsx](src/main.tsx) | React 在这里"接管" #root，开始画页面 |
-
-**练习**：改一下 `main.tsx` 里 `<h1>` 不存在——改 `App.tsx` 里 Header 的标题文字（下一步就能看到），保存后浏览器**不刷新也自动更新**，这就是 Vite 的热更新。
-
-### 第 2 站：路由 = 网站的地图（20 分钟）
-
-| 文件 | 看什么 |
-|---|---|
-| [src/App.tsx](src/App.tsx) | "地址 → 显示哪个页面"的对照表全在这 |
-| [src/layouts/MainLayout.tsx](src/layouts/MainLayout.tsx) | 顶栏+侧栏只写一次，`<Outlet/>` 是子页面的"插座" |
-
-**练习**：在 `App.tsx` 里照葫芦画瓢加一条 `<Route path="/about" element={<h1>关于我们</h1>} />`，浏览器访问 `http://localhost:5173/about` 看效果。
-
-### 第 3 站：数据长什么样、从哪来（15 分钟）
-
-| 文件 | 看什么 |
-|---|---|
-| [src/types.ts](src/types.ts) | 一条物料数据的"形状"（TS 入门） |
-| [vite.config.ts](vite.config.ts) | 假后端：数据就是这里造的，改这里=改数据库 |
-| [src/api/inventoryApi.ts](src/api/inventoryApi.ts) | fetch 请求怎么写、怎么处理错误 |
-
-**练习**：在 `vite.config.ts` 的 `inventories` 数组里加一条你自己的物料，重启 `npm run dev`（配置文件改了要重启），列表里就多了一行。
-
-### 第 4 站：Hook —— React 的"能力包"（30 分钟，最重要的一站）
-
-| 文件 | 看什么 |
-|---|---|
-| [src/hooks/useInventory.ts](src/hooks/useInventory.ts) | useState（存会变的数据）、useEffect（页面出现后干活）、改数据为什么必须造新的 |
-
-**练习**：把 `subtractInventory` 里的 `item.quantity > 0` 条件删掉，点减号看会发生什么（数字变负数了！这就是这个条件的作用）。
-
-### 第 5 站：第一个完整页面（20 分钟）
-
-| 文件 | 看什么 |
-|---|---|
-| [src/pages/Login.tsx](src/pages/Login.tsx) | 受控表单（输入框的值交给 React 保管）、登录成功后怎么跳转 |
-
-**练习**：给登录页加一个"忘记密码？"文字，点击后 `alert("联系管理员")`。
-
-### 第 6 站：列表页面，单向数据流（30 分钟，核心页面）
-
-| 文件 | 看什么 |
-|---|---|
-| [src/pages/Inventory.tsx](src/pages/Inventory.tsx) | 搜索、列表渲染、key 的作用、"算出来的数据不要存 state" |
-| [src/components/InventoryItem.tsx](src/components/InventoryItem.tsx) | 数据从父到子、事件从子到父；为什么事件要包箭头函数 |
-
-**练习**：给 Inventory 加一个"重置搜索"按钮，点击后把 `searchKeyword` 清空。
-
-### 第 7 站：详情页与动态路由（15 分钟）
-
-| 文件 | 看什么 |
-|---|---|
-| [src/pages/InventoryDetail.tsx](src/pages/InventoryDetail.tsx) | `useParams` 怎么从网址里取编号；依赖 `[id]` 的 useEffect |
-
-**练习**：在详情卡片里加一行"数量是否为 0"，用三元表达式显示"是/否"。
-
-### 第 8 站：全局状态 Context（30 分钟，稍难，最后啃）
-
-| 文件 | 看什么 |
-|---|---|
-| [src/context/AuthContext.tsx](src/context/AuthContext.tsx) | 为什么需要 Context、createContext/Provider/useContext 三步 |
-| [src/components/RequireAuth.tsx](src/components/RequireAuth.tsx) | "安检员"：没登录踢去登录页 |
-| [src/pages/Dashboard.tsx](src/pages/Dashboard.tsx) | useMemo 统计数字 |
-
-**练习**：故意把 `main.tsx` 里 `<AuthProvider>` 的包裹去掉，看控制台报的错 —— 这个报错正是 `useAuth` 里的防呆检查打出来的。
-
-### 读不懂某个词？→ 查下面的术语表
-
----
-
-## 📖 术语表（大白话版）
-
-| 术语 | 大白话 |
-|---|---|
-| 组件 (Component) | 页面上的一块"积木"。一个函数，返回一段界面描述 |
-| JSX | 在 JS 里写 HTML 的语法。`<h1>你好</h1>` 放在 return 里就是 JSX |
-| 渲染 (Render) | React 把组件函数执行一遍，算出界面长什么样 |
-| state（状态） | 会变的数据。它一变，React 自动更新界面。用 `useState` 声明 |
-| props | 父组件传给子组件的数据（子组件只能读，不能改） |
-| 挂载 / 卸载 | 组件"出现在页面上" / "从页面上消失" |
-| 副作用 (Effect) | "画界面"之外的事：请求数据、定时器……用 `useEffect` 包起来 |
-| 依赖数组 | useEffect 的第二个参数，意思是"这些值变了就重新执行" |
-| Hook | React 的"能力包"，名字都以 use 开头：useState、useEffect…… |
-| 自定义 Hook | 自己打包的能力包（如 useInventory）。复用逻辑，不复用数据 |
-| Context | 数据"广播电台"。Provider 包住谁，谁的后代都能直接收听 |
-| 受控组件 | 输入框的值交给 React state 保管（value + onChange 成对出现） |
-| 单向数据流 | 数据从父到子往下传；子组件想改变什么，通过回调函数往上报 |
-| Promise / async / await | "这活要等一会儿" / "等它做完再继续"。网络请求必用 |
-| 条件渲染 | 根据条件决定显示什么：`&&`、三元表达式 `? :`、提前 return |
-| 热更新 (HMR) | 改代码保存后，浏览器自动局部更新，不用手动刷新 |
-| TypeScript (TS) | JavaScript + 类型检查。写错字段名/用错类型，当场画红线 |
-| type / 类型标注 | 给数据"定型"：`quantity: number` 表示这个字段必须是数字 |
-| 联合类型 | `A \| B`：要么是 A 要么是 B。如 `Inventory \| null`（还没拿到数据） |
-| 泛型 | 尖括号里的类型说明：`useState<Inventory[]>` = "这个 state 装物料数组" |
-| `?.` 可选链 | 前一级是 null 就直接返回 undefined，不报错：`user?.name` |
-| 类型收窄 | TS 通过 if 判断，确定"这里一定不是 null 了"，后面放心用 |
-
----
-
-## 📂 目录结构
-
+```bash
+npm run typecheck
+npm run lint
+npm run test
+npm run build
+npm run preview
 ```
+
+## Environment
+
+复制 `.env.example` 创建本地 `.env`：
+
+```bash
+VITE_ENABLE_MOCK=true
+VITE_API_BASE_URL=/api
+```
+
+- `VITE_ENABLE_MOCK=true`：启动 MSW 浏览器 worker，适合本地演示和静态部署。
+- `VITE_ENABLE_MOCK=false`：关闭 MSW，将请求转发到 `VITE_API_BASE_URL` 指向的真实后端。
+- 静态部署时必须保留 `public/mockServiceWorker.js`，否则 build 后的 mock 接口不可用。
+
+## Architecture
+
+```txt
 src/
-├── main.tsx                     应用入口：createRoot 点火 + StrictMode
-├── App.tsx                      路由总装：Provider + 路由表
-├── types.ts                     共享的数据类型（一条物料长什么样）
-├── api/
-│   └── inventoryApi.ts          数据请求层（fetch 封装）
-├── context/
-│   └── AuthContext.tsx          全局登录状态（Context 三步用法）
-├── hooks/
-│   └── useInventory.ts          库存数据逻辑（自定义 Hook）
-├── layouts/
-│   └── MainLayout.tsx           布局路由 + <Outlet/>
-├── components/                  通用组件
-│   ├── Header.tsx               顶栏（useContext 读登录用户）
-│   ├── Sidebar.tsx              侧边栏（NavLink 当前页高亮）
-│   ├── InventoryItem.tsx        库存列表行（纯展示组件）
-│   ├── RequireAuth.tsx          登录守卫
-│   └── NotFound.tsx             404 页
-└── pages/                       页面组件
-    ├── Login.tsx                受控表单 + useNavigate
-    ├── Dashboard.tsx            useMemo 统计
-    ├── Inventory.tsx            派生数据 + useRef + 列表渲染
-    └── InventoryDetail.tsx      useParams + 依赖 [id] 的 effect
+├── api/                 请求层：fetch 封装、接口函数
+├── components/          通用组件：Header、Sidebar、InventoryItem、RequireAuth
+├── context/             认证上下文：AuthProvider + useAuth
+├── hooks/               TanStack Query hooks：列表、详情、库存调整 mutation
+├── layouts/             布局路由：MainLayout + Outlet
+├── lib/                 业务纯函数、QueryClient、Zod schema
+├── mocks/               MSW handlers、浏览器 worker、测试 server、mock DB
+├── pages/               页面：Login、Dashboard、Inventory、InventoryDetail
+├── test/                测试环境初始化
+└── types.ts             共享类型
 ```
 
----
+关键数据流：
 
-## 🌊 数据流向结构（重点）
+```txt
+页面组件
+  -> hooks/useInventories.ts
+  -> api/inventoryApi.ts
+  -> /api/inventory
+  -> mocks/handlers.ts
+  -> mocks/db.ts(localStorage)
 
-### 1. 组件树（谁包着谁）
-
-```
-main.tsx  createRoot 点火
-└─ <App>                          src/App.tsx
-   └─ <AuthProvider>              全局登录状态（Context 广播）
-      └─ <BrowserRouter>          路由监听地址栏
-         └─ <Routes>              路由表，自上而下匹配
-            ├─ /login ──────────► <Login>
-            ├─ / ───────────────► <Navigate to="/dashboard">  重定向
-            ├─ RequireAuth ─────► 未登录? 踢去 /login
-            │  └─ <MainLayout>  布局路由
-            │     ├─ <Header>   （useContext 读用户）
-            │     ├─ <Sidebar>  （NavLink 高亮）
-            │     └─ <Outlet> ──┬─ /dashboard ────► <Dashboard>
-            │                   ├─ /inventory ───► <Inventory> ── <InventoryItem> × N
-            │                   └─ /inventory/:id ► <InventoryDetail>
-            └─ * ───────────────► <NotFound>  兜底 404
+库存调整：
+InventoryItem onAdjust
+  -> useAdjustInventory().mutate
+  -> optimistic update 更新 Query cache
+  -> POST /api/inventory/:matnr/adjust
+  -> 成功后 invalidate，失败后 rollback
 ```
 
-### 2. 数据流向图（两条"管道"）
+## API Contract
 
-```
-【数据下行 / props 向下传】
-  vite mock 接口 (/api/inventory)
-        │ fetch + json()
-        ▼
-  api/inventoryApi.ts ────────► hooks/useInventory.ts
-                                  │ useState 存数据
-                                  ▼
-                    pages/Inventory.tsx（调用 Hook）
-                                  │ props: item / onAdd / onSubtract
-                                  ▼
-                    components/InventoryItem.tsx（只负责展示）
-                                  │ 用户点击 +1
-                                  ▼ 事件回调【上行】
+### `POST /api/auth/login`
 
-【事件上行 / 回调向上报】
-  InventoryItem 的 onClick
-        │ 调用 props.onAdd()
-        ▼
-  Inventory 里的 () => addInventory(item.matnr)
-        │ 调用 Hook 返回的函数
-        ▼
-  useInventory 里 setInventories(旧值 => 新数组)
-        │ state 变化
-        ▼
-  React 重新渲染 Inventory → InventoryItem（界面更新，数据又下行）
+```json
+{
+  "username": "admin",
+  "password": "123456"
+}
 ```
 
-### 3. 不走 props 的"广播"：Context
+返回：
 
+```json
+{
+  "user": {
+    "name": "admin",
+    "role": "admin"
+  }
+}
 ```
-Login 表单提交 ──► useAuth().login(名字) ──► AuthContext 的 state 变化
-                                                 │ Provider 广播
-                    ┌────────────────────────────┴───────────┐
-                    ▼                                        ▼
-        Header（显示用户名）                      RequireAuth（放行受保护页面）
+
+### `GET /api/inventory?keyword=&category=&status=`
+
+返回 `Inventory[]`。`status` 可选值为 `out-of-stock`、`low`、`normal`。
+
+### `GET /api/inventory/:matnr`
+
+返回单条 `Inventory`，不存在时返回 `404`。
+
+### `POST /api/inventory/:matnr/adjust`
+
+```json
+{
+  "delta": 1
+}
 ```
 
-三句话记住 React 架构：**state 决定界面；事件改 state；跨层共享用 Context。**
+返回更新后的 `Inventory`。库存为 0 时继续减库存会返回 `409`。
 
----
+## Testing
 
-## 🔤 本项目用到的 TS 语法速查
+```bash
+npm run test
+```
 
-| 写法 | 出现位置 | 意思 |
-|---|---|---|
-| `type Inventory = { ... }` | types.ts | 定义一种数据的"形状" |
-| `: Promise<Inventory[]>` | inventoryApi.ts | 函数返回"一批物料"（异步） |
-| `useState<Inventory[]>([])` | useInventory.ts | 这个 state 装的是物料数组 |
-| `Inventory \| null` | AuthContext 等 | 可能是物料，也可能是 null（还没拿到） |
-| `if (!context) throw ...` | AuthContext.tsx | 判空之后 TS 确定它非 null（类型收窄） |
-| `FormEvent<HTMLFormElement>` | Login.tsx | "表单提交事件"这种事件类型 |
-| `{ children }: { children: ReactNode }` | RequireAuth.tsx | props 类型直接内联写 |
-| `id!` | InventoryDetail.tsx | 末尾感叹号："我保证它不是 undefined" |
-| `getElementById("root")!` | main.tsx | 同上，页面里一定有 root 这个 div |
+覆盖点：
 
----
+- 库存状态、筛选、统计、数量调整等纯函数。
+- `InventoryItem` 的减库存禁用逻辑和事件回调。
+- 登录表单校验、登录成功跳转。
+- 库存列表加载与关键词筛选。
 
-## 📚 知识点索引
+## Deployment
 
-| 知识点 | 文件 |
-|---|---|
-| 入口、StrictMode、渲染流程 | src/main.tsx |
-| 路由表、重定向、404、布局路由 | src/App.tsx、src/layouts/MainLayout.tsx |
-| mock 接口与前端开发模式 | vite.config.ts |
-| TS 类型定义 | src/types.ts |
-| fetch 与 API 层封装 | src/api/inventoryApi.ts |
-| useState、useEffect、自定义 Hook | src/hooks/useInventory.ts |
-| useContext、createContext | src/context/AuthContext.tsx |
-| 受保护路由 | src/components/RequireAuth.tsx |
-| 受控表单、useNavigate、事件类型 | src/pages/Login.tsx |
-| NavLink、props 传事件 | src/components/Sidebar.tsx、InventoryItem.tsx |
-| useMemo | src/pages/Dashboard.tsx |
-| 派生数据、useRef、列表 key | src/pages/Inventory.tsx |
-| useParams、依赖 [id] 的 effect | src/pages/InventoryDetail.tsx |
+这是一个静态 SPA，可部署到 Vercel、Netlify、GitHub Pages 或任意静态服务器。
 
-## 🚀 与真实项目的差距（进阶方向）
+```bash
+npm run build
+npm run preview
+```
 
-- 登录应调后端接口校验，用 token 而不是 sessionStorage 存用户名
-- 库存增减应 POST 到后端持久化（目前只改了前端内存）
-- 数据量大时用 TanStack Query 管理请求缓存
-- 把 `useInventory` 的增减逻辑改写成 `useReducer` 是很好的练习题
+部署前确认：
 
----
+- 构建设置：`npm run build`
+- 输出目录：`dist`
+- 单页应用 fallback：所有路径回退到 `index.html`
+- Mock 演示：保留 `VITE_ENABLE_MOCK=true` 与 `public/mockServiceWorker.js`
 
-## 💼 简历技能参考（学完本项目可以写的 React 技能）
+## Interview Talking Points
 
-> ⚠️ 先提醒一句：**写上去的每一条都可能被面试官追问原理或让你现场写**。
-> 每条后面用（→ 文件）标注了对应源码，写之前把那几个文件再过一遍；
-> 本项目没涉及的（Redux、SSR、单元测试等）不要硬写。
+- 为什么用 TanStack Query 替代页面上各自 `useEffect + useState` 请求：缓存、去重、加载状态、mutation 和 invalidate 更统一。
+- optimistic update 怎么保证用户体验：点击加减立即更新列表和详情缓存，接口失败后回滚。
+- `RequireAuth + Navigate state.from` 如何实现登录后回跳。
+- 为什么筛选条件同步 URL：可分享、可刷新、可回到上一个查询状态。
+- MSW 在开发、测试、静态部署中的价值：不依赖真实后端，也能测试真实 fetch 行为。
+- 哪些地方是 mock 局限：认证不是安全边界，localStorage mock DB 不是生产数据库。
 
-### 版本一：详细版（适合"专业技能"栏目逐条罗列）
+更详细的教学拆解见 [docs/learning-notes.md](./docs/learning-notes.md)。
 
-- 熟悉 React 19 函数组件开发，理解组件化思想、JSX 语法与渲染/重渲染机制（→ main.tsx、App.tsx）
-- 熟悉常用 Hooks：useState 状态管理、useEffect 副作用与依赖数组、useRef 获取 DOM、useMemo 缓存计算，并能编写自定义 Hook 复用带状态的逻辑（→ useInventory.ts、useAuth）
-- 理解单向数据流：props 向下传数据、回调函数向上传事件；掌握受控组件、列表渲染中 key 的正确使用、不可变更新与函数式更新 setX(prev => next)（→ Inventory.tsx、InventoryItem.tsx、useInventory.ts）
-- 熟悉 React Router：布局路由与 Outlet、嵌套路由、动态路由参数 useParams、编程式导航 useNavigate、登录守卫（受保护路由）与 404 兜底、重定向（→ App.tsx、RequireAuth.tsx、InventoryDetail.tsx）
-- 掌握 Context 全局状态共享：createContext / Provider / useContext 三步用法，理解并解决 props 逐层传递（prop drilling）问题（→ AuthContext.tsx、Header.tsx）
-- 使用 TypeScript 进行开发：type 定义数据结构、联合类型（`X | null`）、泛型（`useState<T>`）、类型收窄与判空，减少运行时错误（→ types.ts、各组件）
-- 熟悉 Vite 工程化开发：dev/build/lint 流程、路径与开发代理配置，能编写 Vite 插件 mock 后端接口，独立搭建前后端分离开发环境（→ vite.config.ts）
-- 熟悉浏览器原生 fetch 与异步处理：async/await、Promise、response.ok 状态检查与统一错误处理封装（→ inventoryApi.ts）
-- 了解渲染性能常识：useMemo 缓存昂贵计算、缓存 Context 的 value 避免无关组件重渲染（→ Dashboard.tsx、AuthContext.tsx）
-- 掌握 ES6+ 常用语法：解构赋值、展开运算符、模板字符串、map/filter/reduce、可选链 `?.`（贯穿全部源码）
+## Resume Description
 
-### 版本二：简洁版（技能栏只有一两行时用）
+可以写成：
 
-> React / React Router / TypeScript / Vite：熟悉函数组件与常用 Hooks（useState、useEffect、useMemo、useRef、useContext、自定义 Hook），掌握路由设计与登录守卫、Context 状态共享、单向数据流与不可变更新，能用 TypeScript + Vite 完成前端工程化开发。
+> React 库存管理系统｜个人前端作品集项目  
+> 技术栈：React 19、TypeScript、Vite、React Router、TanStack Query、MSW、React Hook Form、Zod、Vitest。  
+> 基于 React Router 设计公开路由、受保护路由和动态详情路由；使用 TanStack Query 统一列表/详情请求缓存与库存调整 mutation，并实现 optimistic update 和失败回滚；使用 MSW 模拟 REST API 与 localStorage 持久化，构建无后端可演示版本；使用 React Hook Form + Zod 完成登录表单校验；补充 Vitest + Testing Library 测试，覆盖业务纯函数、组件交互和页面流程。
 
-再精简的一句话版（版面紧张时挑重点写）：
+不要写：
 
-> React：函数组件、Hooks 与自定义 Hook、React Router 路由设计、Context 状态管理、单向数据流；TypeScript、Vite
-
-### 配套小建议
-
-- 面试时最常被追问的三个点：**useEffect 依赖数组为什么这么设计**、**key 为什么不能用数组下标**、**为什么改 state 要造新对象** —— 这三个的答案都在源码注释里，重点复习
-- 这个项目本身也可以写进"项目经历"：README 里的「数据流向结构」图就是现成的介绍素材，把库存增减按钮、搜索、登录守卫当成功能点讲即可
-- 想再攒一条可写的技术点：把 `useInventory` 改写成 `useReducer`，就能多写一条"使用 useReducer 管理复杂状态"
+- 不写 JWT、数据库、Redis、Docker、SSR、微前端、Redux、WebSocket。
+- 不写“高并发”“生产级千万数据”“团队协作上线”，这个项目是个人作品集 mock 项目。

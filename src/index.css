@@ -1,61 +1,48 @@
-/* ============================================================
- * index.css —— 全局基础样式（设计变量 + 重置）
- *
- * 【知识点】CSS 变量（自定义属性）：
- * 把颜色、圆角、阴影这些"设计token"定义在 :root（<html> 根元素）上，
- * 全项目通过 var(--xxx) 引用。换主题色只需要改一处。
- * 以后学了 CSS-in-JS / Tailwind，会发现"设计token"的思想是一样的。
- *
- * 文件分工：
- *   index.css —— 全局基础（字体、变量、reset）
- *   App.css   —— 本项目布局和组件样式（由 App.jsx 引入）
- * ============================================================ */
-
 :root {
-  /* ---- 颜色：亮色模式（默认） ---- */
-  --bg: #f3f4f8; /* 页面背景 */
-  --surface: #ffffff; /* 卡片/面板背景 */
-  --border: #e4e5ea; /* 分割线 */
-  --text: #3f4150; /* 正文 */
-  --text-secondary: #7c7f92; /* 次要文字 */
-  --text-heading: #1d1e29; /* 标题 */
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --surface-muted: #eef2f5;
+  --border: #d8e0e6;
+  --text: #43515f;
+  --text-secondary: #6c7a89;
+  --text-heading: #14212d;
 
-  --primary: #5b5bd6; /* 主色（品牌紫蓝） */
-  --primary-hover: #4a4ac2;
-  --primary-soft: rgba(91, 91, 214, 0.1); /* 主色的浅底 */
+  --primary: #0f766e;
+  --primary-hover: #0b625c;
+  --primary-soft: rgba(15, 118, 110, 0.12);
+  --accent: #2563eb;
+  --accent-soft: rgba(37, 99, 235, 0.12);
 
-  --success: #178a50;
-  --success-soft: rgba(23, 138, 80, 0.12);
+  --success: #15803d;
+  --success-soft: rgba(21, 128, 61, 0.12);
   --warning: #b45309;
-  --warning-soft: rgba(217, 119, 6, 0.14);
-  --danger: #c2373b;
-  --danger-soft: rgba(194, 55, 59, 0.12);
+  --warning-soft: rgba(180, 83, 9, 0.14);
+  --danger: #b91c1c;
+  --danger-soft: rgba(185, 28, 28, 0.12);
 
-  /* ---- 形状与阴影 ---- */
-  --radius: 10px;
+  --radius: 8px;
   --radius-sm: 6px;
-  --shadow: 0 1px 2px rgba(16, 18, 35, 0.06), 0 4px 14px rgba(16, 18, 35, 0.06);
+  --shadow: 0 1px 2px rgba(20, 33, 45, 0.06), 0 8px 24px rgba(20, 33, 45, 0.06);
 
-  /* ---- 字体 ---- */
   --sans: system-ui, "Segoe UI", "Microsoft YaHei", Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 }
 
-/* 【知识点】媒体查询 prefers-color-scheme：跟随系统的暗色模式。
- * 只需要重新定义一遍变量，所有 var() 引用处自动换肤 —— 这就是
- * "用变量做主题"的好处。 */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #14151c;
-    --surface: #1e2029;
-    --border: #31333f;
-    --text: #c6c8d4;
-    --text-secondary: #8f92a3;
-    --text-heading: #f0f1f6;
+    --bg: #101820;
+    --surface: #17222c;
+    --surface-muted: #1e2b37;
+    --border: #2c3d4a;
+    --text: #c7d2dc;
+    --text-secondary: #94a6b5;
+    --text-heading: #f4f8fb;
 
-    --primary: #8687f5;
-    --primary-hover: #9d9ef8;
-    --primary-soft: rgba(134, 135, 245, 0.16);
+    --primary: #2dd4bf;
+    --primary-hover: #5eead4;
+    --primary-soft: rgba(45, 212, 191, 0.16);
+    --accent: #60a5fa;
+    --accent-soft: rgba(96, 165, 250, 0.16);
 
     --success: #4ade80;
     --success-soft: rgba(74, 222, 128, 0.14);
@@ -64,23 +51,32 @@
     --danger: #f87171;
     --danger-soft: rgba(248, 113, 113, 0.14);
 
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.3);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.26);
   }
 }
 
-/* ---- 全局重置：浏览器默认样式往往不符合设计，先清掉 ---- */
 * {
-  box-sizing: border-box; /* 让 width 包含 padding+border，布局更好算 */
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
 }
 
 body {
-  margin: 0; /* 清掉浏览器默认的 8px 边距 */
+  margin: 0;
   font-family: var(--sans);
   font-size: 15px;
   line-height: 1.6;
   color: var(--text);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select {
+  font: inherit;
 }
 
 h1,
@@ -98,4 +94,8 @@ p {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+svg {
+  flex-shrink: 0;
 }

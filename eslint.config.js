@@ -9,7 +9,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
  * 比如定义了没用的变量、useEffect 依赖数组写错……
  * TypeScript 相关检查由 typescript-eslint 提供（比 JS 版更懂类型）。 */
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'public/mockServiceWorker.js']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
